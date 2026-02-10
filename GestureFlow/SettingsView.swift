@@ -51,9 +51,12 @@ struct SettingsView: View {
                 .foregroundColor(.green)
                 .tracking(2)
             
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 10) {
                 guideRow(icon: "hand.raised.fill", text: "Hold palms towards camera, fingers spread wide for best tracking.")
                 guideRow(icon: "arrow.triangle.2.circlepath", text: "Lost a hand? Simply pull it out of view and bring it back in to auto-reset your baseline.")
+                guideRow(icon: "hand.draw.fill", text: "Pinch index and thumb to dynamically modulate Pitch and Speed.")
+                guideRow(icon: "music.note.list", text: "Choose your own audio from your videos or files")
+                guideRow(icon: "heart.fill", text: "Please enjoy this app made with Apple's Machine Vision System, Made by Aristides Lintzeris")
             }
             .padding(.horizontal)
             

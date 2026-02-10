@@ -11,7 +11,6 @@ class AppCoordinator: ObservableObject {
     @Published var selectedTrackTitle: String?
     @Published var isPlaying: Bool = false
     @Published var showInstructions: Bool = true
-    @Published var orientation: UIDeviceOrientation = .portrait
     
     // MARK: - App Icon / Launch Screen
     @MainActor let cameraManager = CameraManager()
@@ -37,7 +36,7 @@ class AppCoordinator: ObservableObject {
     init() {
         // The VisionEngine listens to the camera's video stream.
         visionEngine = VisionEngine(pixelBufferPublisher: cameraManager.pixelBufferPublisher.eraseToAnyPublisher())
-        
+
         setupSubscriptions()
         // Monitor tab changes to stop recording
         $selectedTab
@@ -47,7 +46,7 @@ class AppCoordinator: ObservableObject {
                 }
             }
             .store(in: &cancellables)
-            
+
         // Feed video frames to recorder
         cameraManager.pixelBufferPublisher
             .sink { [weak self] buffer in
@@ -56,8 +55,7 @@ class AppCoordinator: ObservableObject {
                 }
             }
             .store(in: &cancellables)
-        setupOrientationMonitoring()
-        
+
         Task { @MainActor in
             cameraManager.requestPermission()
             // Start the camera session as soon as the app launches.
@@ -279,20 +277,7 @@ class AppCoordinator: ObservableObject {
         guard let thumb = hand.thumbTip, let index = hand.indexTip else { return nil }
         return sqrt(pow(thumb.x - index.x, 2) + pow(thumb.y - index.y, 2))
     }
-    
-    private func setupOrientationMonitoring() {
-        self.orientation = UIDevice.current.orientation
-        
-        NotificationCenter.default.addObserver(forName: UIDevice.orientationDidChangeNotification, object: nil, queue: .main) { [weak self] _ in
-            let newOrientation = UIDevice.current.orientation
-            if newOrientation.isValidInterfaceOrientation {
-                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                    self?.orientation = newOrientation
-                }
-            }
-        }
-    }
-        
+
     // MARK: - Settings Handlers
     func cycleSensitivity() {
         let options = ["Standard", "High", "Extreme"]

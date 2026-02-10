@@ -2,6 +2,8 @@ import SwiftUI
 
 struct ActiveSessionView: View {
     @EnvironmentObject var coordinator: AppCoordinator
+    @State private var showSplash = true
+    @State private var isCameraReady = false
 
     var body: some View {
         ZStack {
@@ -9,6 +11,12 @@ struct ActiveSessionView: View {
             if coordinator.cameraManager.permissionGranted {
                 CameraPreviewView(cameraManager: coordinator.cameraManager)
                     .ignoresSafeArea()
+                    .onAppear {
+                        // Camera is rendering, mark as ready
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            isCameraReady = true
+                        }
+                    }
 
                 // Layer 1: Gesture Overlay
                 GestureCanvasView()
@@ -16,13 +24,13 @@ struct ActiveSessionView: View {
 
                 // Layer 2: HUD / UI
                 uiOverlay
-                
+
                 if coordinator.showInstructions {
                     instructionalOverlay
                 }
-                
-                // Layer 3: Launch Intro
-                if showSplash {
+
+                // Layer 3: Launch Intro with Loading
+                if showSplash || !isCameraReady {
                     splashOverlay
                 }
             } else {
@@ -30,32 +38,36 @@ struct ActiveSessionView: View {
             }
         }
         .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
                 withAnimation(.easeOut(duration: 1.0)) {
                     showSplash = false
                 }
             }
         }
     }
-    
-    @State private var showSplash = true
-    
+
     private var splashOverlay: some View {
         ZStack {
             Color.black.ignoresSafeArea()
-            
-            // Note: Using the Default icon from assets
+
             VStack(spacing: 32) {
-                Image("Untitled-iOS-Default-1024x1024@1x")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
+                Image(systemName: "camera.fill")
+                    .font(.system(size: 80))
+                    .foregroundColor(.green)
                     .frame(width: 140, height: 140)
+                    .background(Color.white.opacity(0.1))
                     .cornerRadius(28)
                     .shadow(color: .green.opacity(0.3), radius: 20, x: 0, y: 0)
-                
-                ProgressView()
-                    .tint(.green)
-                    .scaleEffect(1.5)
+
+                VStack(spacing: 12) {
+                    ProgressView()
+                        .tint(.green)
+                        .scaleEffect(1.5)
+
+                    Text(isCameraReady ? "Loading..." : "Initializing Camera...")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.green.opacity(0.8))
+                }
             }
         }
         .transition(.opacity)

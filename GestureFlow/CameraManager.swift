@@ -11,7 +11,7 @@ class CameraManager: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
     var session: AVCaptureSession { captureSession }
     private let videoOutput = AVCaptureVideoDataOutput()
     private let sessionQueue = DispatchQueue(label: "com.gestureflow.sessionQueue")
-    private var rotationCoordinator: AVCaptureDeviceRotationCoordinator?
+    private var rotationCoordinator: AVCaptureDevice.RotationCoordinator?
     
     // Publishes the pixel buffer for consumption by the VisionEngine.
     nonisolated let pixelBufferPublisher = PassthroughSubject<CVPixelBuffer, Never>()
@@ -26,14 +26,14 @@ class CameraManager: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
     }()
     
     // MARK: - Initialization
-    
+
     override init() {
         super.init()
         setupSession()
     }
-    
+
     // MARK: - Session Management
-    
+
     func requestPermission() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
@@ -56,7 +56,7 @@ class CameraManager: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
             self.permissionGranted = false
         }
     }
-    
+
     private func setupSession() {
         Task { @MainActor in
             captureSession.beginConfiguration()
@@ -85,7 +85,7 @@ class CameraManager: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
             captureSession.addInput(videoDeviceInput)
 
             // Initialize rotation coordinator
-            rotationCoordinator = AVCaptureDeviceRotationCoordinator(device: videoDevice, previewLayer: previewLayer)
+            rotationCoordinator = AVCaptureDevice.RotationCoordinator(device: videoDevice, previewLayer: previewLayer)
 
             // Configure video output.
             if captureSession.canAddOutput(videoOutput) {
@@ -110,7 +110,7 @@ class CameraManager: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
             captureSession.commitConfiguration()
         }
     }
-    
+
     func startSession() {
         if !captureSession.isRunning {
             sessionQueue.async { [weak self] in
@@ -122,20 +122,7 @@ class CameraManager: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
             }
         }
     }
-    
-    func updateOrientation(_ orientation: UIDeviceOrientation) {
-        Task { @MainActor in
-            guard let connection = videoOutput.connection(with: .video),
-                  let coordinator = rotationCoordinator else { return }
 
-            let rotationAngle = coordinator.videoRotationAngleForHorizonLevelCapture
-
-            if connection.isVideoRotationAngleSupported(rotationAngle) {
-                connection.videoRotationAngle = rotationAngle
-            }
-        }
-    }
-    
     func stopSession() {
         sessionQueue.async { [weak self] in
             guard let self else { return }

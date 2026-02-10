@@ -31,15 +31,6 @@ struct LibraryView: View {
                         Label("From Files", systemImage: "folder.fill")
                     }
                 }
-                
-                Section(header: Text("Streaming")) {
-                    Button(action: {
-                        // TODO: Implement MPMediaPickerController
-                        print("Apple Music Tapped")
-                    }) {
-                        Label("From Apple Music", systemImage: "music.note")
-                    }
-                }
             }
             .navigationTitle("Select Media")
             .sheet(isPresented: $isShowingFilePicker) {
