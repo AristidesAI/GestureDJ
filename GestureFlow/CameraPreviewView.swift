@@ -20,9 +20,26 @@ struct CameraPreviewView: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: VideoPreviewUIView, context: Context) {
-        // Update session if it changed (though it's persistent in CameraManager)
+        // Update session if it changed
         if uiView.videoPreviewLayer.session != cameraManager.session {
             uiView.videoPreviewLayer.session = cameraManager.session
+        }
+        
+        // Update orientation
+        if let connection = uiView.videoPreviewLayer.connection, connection.isVideoOrientationSupported {
+            let deviceOrientation = UIDevice.current.orientation
+            let videoOrientation: AVCaptureVideoOrientation
+            
+            switch deviceOrientation {
+            case .landscapeLeft: videoOrientation = .landscapeRight
+            case .landscapeRight: videoOrientation = .landscapeLeft
+            case .portraitUpsideDown: videoOrientation = .portraitUpsideDown
+            default: videoOrientation = .portrait
+            }
+            
+            if connection.videoOrientation != videoOrientation {
+                connection.videoOrientation = videoOrientation
+            }
         }
     }
 }

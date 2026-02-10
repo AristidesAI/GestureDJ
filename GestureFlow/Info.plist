@@ -2,14 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSCameraUsageDescription</key>
-	<string>Camera access is required for gesture control.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Microphone access is required for audio processing.</string>
-	<key>NSAppleMusicUsageDescription</key>
-	<string>Music library access is required to load and play tracks.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Photo library access is required to select audio files.</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>UIBackgroundModes</key>
@@ -17,5 +9,18 @@
 		<string>audio</string>
 		<string>fetch</string>
 	</array>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIImageName</key>
+		<string>Untitled-iOS-Default-1024x1024@1x</string>
+		<key>UIImageRespectsSafeAreaInsets</key>
+		<true/>
+	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Used to track hand gestures for controlling music.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Used to capture audio for video recordings.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Used to save your gesture-controlled music videos.</string>
 </dict>
 </plist>

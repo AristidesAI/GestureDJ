@@ -134,8 +134,8 @@ struct InstructionalOverlayView: View {
                         .foregroundColor(.white)
                     
                     HStack(spacing: 40) {
-                        Image(systemName: "hand.raised.fill")
-                        Image(systemName: "hand.raised.fill")
+                        Image(systemName: "hand.palm.facing.me.fill")
+                        Image(systemName: "hand.palm.facing.me.fill")
                             .scaleEffect(x: -1, y: 1) // Mirror the second hand
                     }
                     .font(.system(size: 80))

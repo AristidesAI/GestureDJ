@@ -48,6 +48,10 @@ class AudioManager {
         currentStrategy?.pause()
     }
     
+    func restart() {
+        currentStrategy?.restart()
+    }
+    
     // DSP controls are passed through to the current strategy.
     func setSpeed(_ speed: Float) {
         currentStrategy?.setSpeed(speed)
@@ -59,5 +63,9 @@ class AudioManager {
     
     func setVolume(_ volume: Float) {
         currentStrategy?.setVolume(volume)
+    }
+    
+    func getMainMixerNode() -> AVAudioNode? {
+        return currentStrategy?.getMainMixerNode()
     }
 }

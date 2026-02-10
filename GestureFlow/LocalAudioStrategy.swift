@@ -4,10 +4,12 @@ protocol AudioStrategy {
     func play(trackURL: URL)
     func pause()
     func resume()
+    func restart()
     func stop()
     func setSpeed(_ speed: Float)
     func setPitch(_ pitch: Float)
     func setVolume(_ volume: Float)
+    func getMainMixerNode() -> AVAudioNode?
 }
 
 class LocalAudioStrategy: AudioStrategy {
@@ -17,6 +19,7 @@ class LocalAudioStrategy: AudioStrategy {
     private let engine = AVAudioEngine()
     private let playerNode = AVAudioPlayerNode()
     private let timePitchNode = AVAudioUnitTimePitch()
+    private var currentAudioFile: AVAudioFile?
     
     // MARK: - Initialization
     
@@ -51,6 +54,7 @@ class LocalAudioStrategy: AudioStrategy {
             engine.connect(engine.mainMixerNode, to: engine.outputNode, format: nil)
             
             // Prepare and play the file
+            self.currentAudioFile = audioFile
             playerNode.scheduleFile(audioFile, at: nil)
             
             if !engine.isRunning {
@@ -76,6 +80,13 @@ class LocalAudioStrategy: AudioStrategy {
         playerNode.play()
     }
     
+    func restart() {
+        guard let file = currentAudioFile else { return }
+        playerNode.stop()
+        playerNode.scheduleFile(file, at: nil)
+        playerNode.play()
+    }
+    
     func stop() {
         playerNode.stop()
         engine.stop()
@@ -84,8 +95,8 @@ class LocalAudioStrategy: AudioStrategy {
     // MARK: - DSP Controls
     
     func setSpeed(_ speed: Float) {
-        // Clamp the rate to a usable range.
-        timePitchNode.rate = max(0.1, min(speed, 2.0))
+        // Clamp the rate to a usable range (matched to AppCoordinator's 4.0 limit)
+        timePitchNode.rate = max(0.1, min(speed, 4.0))
     }
     
     func setPitch(_ pitch: Float) {
@@ -95,6 +106,10 @@ class LocalAudioStrategy: AudioStrategy {
     
     func setVolume(_ volume: Float) {
         playerNode.volume = max(0.0, min(volume, 1.0))
+    }
+    
+    func getMainMixerNode() -> AVAudioNode? {
+        return engine.mainMixerNode
     }
     
     // MARK: - Private Helpers

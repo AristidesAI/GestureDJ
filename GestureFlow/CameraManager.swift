@@ -69,8 +69,14 @@ class CameraManager: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
             // Set session preset for a balance of performance and quality.
             self.captureSession.sessionPreset = .high
             
-            // Configure camera input.
-            guard let videoDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front),
+            // Configure camera input - preferring the widest available front camera for larger FOV
+            let discovery = AVCaptureDevice.DiscoverySession(
+                deviceTypes: [.builtInUltraWideCamera, .builtInWideAngleCamera],
+                mediaType: .video,
+                position: .front
+            )
+            
+            guard let videoDevice = discovery.devices.first,
                   let videoDeviceInput = try? AVCaptureDeviceInput(device: videoDevice),
                   self.captureSession.canAddInput(videoDeviceInput) else {
                 print("Error: Could not create video device input.")
@@ -98,12 +104,30 @@ class CameraManager: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
     }
     
     func startSession() {
-        sessionQueue.async {
-            if !self.captureSession.isRunning {
+        if !captureSession.isRunning {
+            sessionQueue.async {
                 self.captureSession.startRunning()
                 Task { @MainActor in
                     self.isSessionRunning = true
                 }
+            }
+        }
+    }
+    
+    func updateOrientation(_ orientation: UIDeviceOrientation) {
+        sessionQueue.async {
+            guard let connection = self.videoOutput.connection(with: .video) else { return }
+            
+            let videoOrientation: AVCaptureVideoOrientation
+            switch orientation {
+            case .landscapeLeft: videoOrientation = .landscapeRight
+            case .landscapeRight: videoOrientation = .landscapeLeft
+            case .portraitUpsideDown: videoOrientation = .portraitUpsideDown
+            default: videoOrientation = .portrait
+            }
+            
+            if connection.isVideoOrientationSupported {
+                connection.videoOrientation = videoOrientation
             }
         }
     }

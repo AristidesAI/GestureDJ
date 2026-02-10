@@ -55,6 +55,7 @@ struct LibraryView: View {
                 }
             }
         }
+        .navigationViewStyle(.stack)
     }
 }
 
