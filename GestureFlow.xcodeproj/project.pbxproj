@@ -29,9 +29,22 @@
 		DF851F8A2F3A99A400B4AF54 /* GestureFlowUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GestureFlowUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		DF851F9E2F3A9AAD00B4AF54 /* Exceptions for "GestureFlow" folder in "GestureFlow" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = DF851F722F3A99A300B4AF54 /* GestureFlow */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		DF851F752F3A99A300B4AF54 /* GestureFlow */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				DF851F9E2F3A9AAD00B4AF54 /* Exceptions for "GestureFlow" folder in "GestureFlow" target */,
+			);
 			path = GestureFlow;
 			sourceTree = "<group>";
 		};
@@ -400,6 +413,13 @@
 				DEVELOPMENT_TEAM = 8S7P33V94X;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GestureFlow/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Read access is required to load your music library for playback.";
+				INFOPLIST_KEY_LSApplicationCategoryType = "Camera access is required to track hand coordinates for real-time audio control.";
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "";
+				INFOPLIST_KEY_NSCameraUsageDescription = "";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Required for audio session routing, even if not recording voice.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -432,6 +452,13 @@
 				DEVELOPMENT_TEAM = 8S7P33V94X;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GestureFlow/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Read access is required to load your music library for playback.";
+				INFOPLIST_KEY_LSApplicationCategoryType = "Camera access is required to track hand coordinates for real-time audio control.";
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "";
+				INFOPLIST_KEY_NSCameraUsageDescription = "";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Required for audio session routing, even if not recording voice.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

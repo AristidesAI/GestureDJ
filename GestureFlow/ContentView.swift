@@ -1,24 +1,12 @@
-//
-//  ContentView.swift
-//  GestureFlow
-//
-//  Created by aristides lintzeris on 10/2/2026.
-//
-
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject var coordinator: AppCoordinator // Now finds AppCoordinator
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
+        CameraView() // Now finds CameraView
+            .sheet(isPresented: $coordinator.isShowingLibrary) {
+                LibraryView() // Now finds LibraryView
+            }
     }
-}
-
-#Preview {
-    ContentView()
 }
