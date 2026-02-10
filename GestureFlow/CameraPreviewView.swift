@@ -24,23 +24,9 @@ struct CameraPreviewView: UIViewRepresentable {
         if uiView.videoPreviewLayer.session != cameraManager.session {
             uiView.videoPreviewLayer.session = cameraManager.session
         }
-        
-        // Update orientation
-        if let connection = uiView.videoPreviewLayer.connection, connection.isVideoOrientationSupported {
-            let deviceOrientation = UIDevice.current.orientation
-            let videoOrientation: AVCaptureVideoOrientation
-            
-            switch deviceOrientation {
-            case .landscapeLeft: videoOrientation = .landscapeRight
-            case .landscapeRight: videoOrientation = .landscapeLeft
-            case .portraitUpsideDown: videoOrientation = .portraitUpsideDown
-            default: videoOrientation = .portrait
-            }
-            
-            if connection.videoOrientation != videoOrientation {
-                connection.videoOrientation = videoOrientation
-            }
-        }
+
+        // The AVCaptureDeviceRotationCoordinator automatically handles rotation
+        // when initialized with the previewLayer, so no manual orientation updates needed
     }
 }
 

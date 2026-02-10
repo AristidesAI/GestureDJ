@@ -4,13 +4,14 @@ import UIKit
 
 @MainActor
 class CameraManager: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleBufferDelegate {
-    
+
     // MARK: - Properties
-    
+
     private let captureSession = AVCaptureSession()
     var session: AVCaptureSession { captureSession }
     private let videoOutput = AVCaptureVideoDataOutput()
     private let sessionQueue = DispatchQueue(label: "com.gestureflow.sessionQueue")
+    private var rotationCoordinator: AVCaptureDeviceRotationCoordinator?
     
     // Publishes the pixel buffer for consumption by the VisionEngine.
     nonisolated let pixelBufferPublisher = PassthroughSubject<CVPixelBuffer, Never>()
@@ -57,57 +58,65 @@ class CameraManager: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
     }
     
     private func setupSession() {
-        sessionQueue.async { [weak self] in
-            guard let self = self else { return }
-            
-            self.captureSession.beginConfiguration()
-            
+        Task { @MainActor in
+            captureSession.beginConfiguration()
+
             // ARCHITECTURE FIX: Prevent camera from resetting the audio session.
             // This is required when using AVAudioEngine alongside AVCaptureSession.
-            self.captureSession.automaticallyConfiguresApplicationAudioSession = false
-            
+            captureSession.automaticallyConfiguresApplicationAudioSession = false
+
             // Set session preset for a balance of performance and quality.
-            self.captureSession.sessionPreset = .high
-            
+            captureSession.sessionPreset = .high
+
             // Configure camera input - preferring the widest available front camera for larger FOV
             let discovery = AVCaptureDevice.DiscoverySession(
                 deviceTypes: [.builtInUltraWideCamera, .builtInWideAngleCamera],
                 mediaType: .video,
                 position: .front
             )
-            
+
             guard let videoDevice = discovery.devices.first,
                   let videoDeviceInput = try? AVCaptureDeviceInput(device: videoDevice),
-                  self.captureSession.canAddInput(videoDeviceInput) else {
+                  captureSession.canAddInput(videoDeviceInput) else {
                 print("Error: Could not create video device input.")
-                self.captureSession.commitConfiguration()
+                captureSession.commitConfiguration()
                 return
             }
-            self.captureSession.addInput(videoDeviceInput)
-            
+            captureSession.addInput(videoDeviceInput)
+
+            // Initialize rotation coordinator
+            rotationCoordinator = AVCaptureDeviceRotationCoordinator(device: videoDevice, previewLayer: previewLayer)
+
             // Configure video output.
-            if self.captureSession.canAddOutput(self.videoOutput) {
-                self.videoOutput.setSampleBufferDelegate(self, queue: self.sessionQueue)
-                self.videoOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]
-                self.captureSession.addOutput(self.videoOutput)
-                
-                // Explicitly set portrait orientation for the video output connection
-                if let connection = self.videoOutput.connection(with: .video) {
-                    if connection.isVideoOrientationSupported {
-                        connection.videoOrientation = .portrait
+            if captureSession.canAddOutput(videoOutput) {
+                await withCheckedContinuation { continuation in
+                    sessionQueue.async {
+                        self.videoOutput.setSampleBufferDelegate(self, queue: self.sessionQueue)
+                        continuation.resume()
+                    }
+                }
+                videoOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]
+                captureSession.addOutput(videoOutput)
+
+                // Set initial rotation angle for the video output connection
+                if let connection = videoOutput.connection(with: .video),
+                   let coordinator = rotationCoordinator {
+                    if connection.isVideoRotationAngleSupported(coordinator.videoRotationAngleForHorizonLevelCapture) {
+                        connection.videoRotationAngle = coordinator.videoRotationAngleForHorizonLevelCapture
                     }
                 }
             }
-            
-            self.captureSession.commitConfiguration()
+
+            captureSession.commitConfiguration()
         }
     }
     
     func startSession() {
         if !captureSession.isRunning {
-            sessionQueue.async {
-                self.captureSession.startRunning()
+            sessionQueue.async { [weak self] in
+                guard let self else { return }
                 Task { @MainActor in
+                    self.captureSession.startRunning()
                     self.isSessionRunning = true
                 }
             }
@@ -115,28 +124,24 @@ class CameraManager: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
     }
     
     func updateOrientation(_ orientation: UIDeviceOrientation) {
-        sessionQueue.async {
-            guard let connection = self.videoOutput.connection(with: .video) else { return }
-            
-            let videoOrientation: AVCaptureVideoOrientation
-            switch orientation {
-            case .landscapeLeft: videoOrientation = .landscapeRight
-            case .landscapeRight: videoOrientation = .landscapeLeft
-            case .portraitUpsideDown: videoOrientation = .portraitUpsideDown
-            default: videoOrientation = .portrait
-            }
-            
-            if connection.isVideoOrientationSupported {
-                connection.videoOrientation = videoOrientation
+        Task { @MainActor in
+            guard let connection = videoOutput.connection(with: .video),
+                  let coordinator = rotationCoordinator else { return }
+
+            let rotationAngle = coordinator.videoRotationAngleForHorizonLevelCapture
+
+            if connection.isVideoRotationAngleSupported(rotationAngle) {
+                connection.videoRotationAngle = rotationAngle
             }
         }
     }
     
     func stopSession() {
-        sessionQueue.async {
-            if self.captureSession.isRunning {
-                self.captureSession.stopRunning()
-                Task { @MainActor in
+        sessionQueue.async { [weak self] in
+            guard let self else { return }
+            Task { @MainActor in
+                if self.captureSession.isRunning {
+                    self.captureSession.stopRunning()
                     self.isSessionRunning = false
                 }
             }
