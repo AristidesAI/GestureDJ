@@ -16,11 +16,5 @@
 		<key>UIImageRespectsSafeAreaInsets</key>
 		<true/>
 	</dict>
-	<key>NSCameraUsageDescription</key>
-	<string>Used to track hand gestures for controlling music.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Used to capture audio for video recordings.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Used to save your gesture-controlled music videos.</string>
 </dict>
 </plist>
