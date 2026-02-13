@@ -433,7 +433,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GestureFlow/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Read access is required to load your music library for playback.";
+				INFOPLIST_KEY_CFBundleDisplayName = GestureDJ;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Music library access is required to load and play tracks.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Used to track hand gestures for controlling music.";
@@ -478,7 +478,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GestureFlow/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Read access is required to load your music library for playback.";
+				INFOPLIST_KEY_CFBundleDisplayName = GestureDJ;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Music library access is required to load and play tracks.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Used to track hand gestures for controlling music.";

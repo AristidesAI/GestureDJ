@@ -4,12 +4,7 @@
 <dict>
 	<key>CFBundleSignature</key>
 	<string>????</string>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>audio</string>
-		<string>fetch</string>
-	</array>
-	<key>UILaunchScreen</key>
+<key>UILaunchScreen</key>
 	<dict>
 		<key>UIImageName</key>
 		<string>Untitled-iOS-Default-1024x1024@1x</string>

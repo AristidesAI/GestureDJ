@@ -93,28 +93,17 @@ struct PermissionDeniedView: View {
                 Image(systemName: "video.slash.fill")
                     .font(.system(size: 60))
                     .foregroundColor(.white)
-                
+
                 Text("Camera Access Required")
                     .font(.title)
                     .fontWeight(.bold)
                     .foregroundColor(.white)
-                
-                Text("To control music with gestures, please grant camera access in your device settings.")
+
+                Text("GestureDJ uses the camera to track your hand gestures and control music playback. You can enable camera access in Settings > Privacy & Security > Camera.")
                     .font(.headline)
                     .foregroundColor(.white.opacity(0.8))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
-                
-                // Button to open the app's settings directly
-                Button("Open Settings") {
-                    if let url = URL(string: UIApplication.openSettingsURLString) {
-                        UIApplication.shared.open(url)
-                    }
-                }
-                .padding()
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(10)
             }
         }
     }
